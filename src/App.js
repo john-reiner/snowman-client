@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react'
+import './App.css';
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
 
 import Login from './components/Login';
-import NavBar from './containers/NavBar';
+// import NavBar from './containers/NavBar';
 import Main from './containers/Main';
 
 function App() {
@@ -35,12 +38,11 @@ function App() {
   // console.log(user)
 
   return (
-    <div>
-
-      <NavBar loggedIn={user.loggedIn} username={user.username}/>
-      
+    <Container maxWidth="lg">
+      <Typography variant="h1" color="initial" align="center">SnowMan</Typography>
+      {/* <NavBar loggedIn={user.loggedIn} username={user.username}/> */}
       {user.loggedIn ? <Main user={user.loggedInUser}/> : <Login LoginUser={LoginUser} />}
-    </div>
+    </Container>
   );
 }
 
