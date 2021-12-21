@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
+import BillShow from '../containers/BillShow'
 
-import { Table, TableRow, TableCell, IconButton,TableHead, TableBody, Typography, Collapse, Box } from '@mui/material'
+import { TableRow, TableCell, IconButton, Collapse, Box } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
@@ -30,9 +31,7 @@ export default function Bill(props) {
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <Box sx={{ margin: 1 }}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Something about the {props.title} bill
-                        </Typography>
+                        <BillShow id={props.id} title={props.title} />
                     </Box>
                 </Collapse>
                 </TableCell>

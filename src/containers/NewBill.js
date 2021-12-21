@@ -1,20 +1,42 @@
 import React, {useState} from 'react'
-import { Dialog, FormHelperText, DialogContentText, TextField, DialogTitle, DialogContent, Button, DialogActions, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Dialog, CircularProgress, FormHelperText, DialogContentText, TextField, DialogTitle, DialogContent, Button, DialogActions, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 export default function NewBill(props) {
+
+    const [loading, setLoading] = useState(false)
 
     const [newBill, setNewBill] = useState({
         title: "",
         due_date: 1,
-        amount_due: "",
+        amount_due: '',
         balance: null,
         interest_rate: null
     })
 
+
     const handleChange = e => setNewBill({...newBill, [e.target.name] : e.target.value})
+    // const handleAmountDueChange = e => {
+    //     console.log(e.target.value)
+    //     let valueArray = Array.from(e.target.value)
+    //     console.log(valueArray)
+    //     if (valueArray.length > 0) {
+    //         for (let i = 0; i < valueArray.length; i++) {
+    //             const index = valueArray.indexOf('.');
+    //             valueArray.splice(index, 1);
+    //             valueArray.splice(valueArray.length - 2, 0, '.')
+    //             if (valueArray.length > 4 && valueArray[0] === '0') {
+    //                 valueArray.splice(0, 1);
+    //             }
+    //             setNewBill({...newBill, [e.target.name] : valueArray.join('')})
+    //         }
+    //     } else {
+    //         setNewBill({...newBill, [e.target.name] : e.target.value})
+    //     }
+    // }
 
     const handleSubmit = e => {
         e.preventDefault()
+        setLoading(true)
         fetch('http://localhost:3001/bills', {
             method: 'POST',
             headers: {
@@ -26,7 +48,8 @@ export default function NewBill(props) {
         .then(response => response.json())
         .then(bill => {
             if (bill) {
-                console.log(bill)
+                setLoading(false)
+                handleClose()
             }
         })
     }
@@ -39,10 +62,21 @@ export default function NewBill(props) {
         })
     }
 
+    const handleClose = () => {
+        setNewBill({
+            title: "",
+            due_date: 1,
+            amount_due: '',
+            balance: null,
+            interest_rate: null
+        })
+        props.setNewBillModalShow(false)
+    }
+
     console.log(newBill)
 
     return (
-        <Dialog open={props.newBillModalShow} onClose={() => props.setNewBillModalShow(false)}>
+        <Dialog open={props.newBillModalShow} onClose={handleClose}>
     `       <DialogTitle>Set up a new Bill</DialogTitle>
             <DialogContent>
             <DialogContentText>
@@ -83,46 +117,48 @@ export default function NewBill(props) {
                 </FormControl>
                 <TextField
                     required
-                    margin="dense"
-                    id="name"
+                    id="outlined-number"
                     label="Amount Due"
-                    type="email"
-                    fullWidth
-                    variant="standard"
+                    type="number"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    helperText="Amount due each month"
+                    value={newBill.amount_due}
+                    onChange={handleChange}
+                    name='amount_due'
                 />
-            
+                <TextField
+                    required
+                    id="outlined-number"
+                    label="Interest Rate"
+                    type="number"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    helperText="Interest Rate"
+                    value={newBill.interest_rate}
+                    onChange={handleChange}
+                    name='interest_rate'
+                />
+                <TextField
+                    required
+                    id="outlined-number"
+                    label="Balance"
+                    type="number"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    helperText="Remaining Balance"
+                    value={newBill.balance}
+                    onChange={handleChange}
+                    name='balance'
+                />
             </Box>
-                        <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="standard"
-            />
-                        <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="standard"
-            />
-                        <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Email Address"
-                type="email"
-                fullWidth
-                variant="standard"
-            />
             </DialogContent>
             <DialogActions>
-            <Button onClick={() => props.setNewBillModalShow(false)}>Cancel</Button>
-            <Button onClick={handleSubmit}>Submit</Button>
+                <Button onClick={handleClose}>Cancel</Button>
+                {loading ? <CircularProgress /> : <Button onClick={handleSubmit}>Submit</Button>}
             </DialogActions>`
         </Dialog>
     )

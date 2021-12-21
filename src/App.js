@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
 import Login from './components/Login';
-// import NavBar from './containers/NavBar';
 import Main from './containers/Main';
 
 function App() {

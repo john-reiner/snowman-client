@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import Bill from '../components/Bill'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
@@ -8,6 +8,15 @@ import { TableRow, TableCell, TableContainer, Table, TableHead,TableBody, Button
 export default function Bills(props) {
 
     const [open, setOpen] = useState(false)
+    const [bills, setBills] = useState([])
+
+    useEffect(() => {
+        fetchBills()
+    }, [])
+
+    const fetchBills = () => {
+        
+    }
     
     const renderBills = () => {
         return props.bills.map(bill => {
