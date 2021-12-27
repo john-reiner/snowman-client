@@ -1,11 +1,10 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect } from 'react'
 import { Dialog, CircularProgress, FormHelperText, DialogContentText, TextField, DialogTitle, DialogContent, Button, DialogActions, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
-export default function NewBill(props) {
-
+export default function EditBill(props) {
     const [loading, setLoading] = useState(false)
 
-    const [newBill, setNewBill] = useState({
+    const [bill, setBill] = useState({
         title: "",
         due_date: 1,
         amount_due: '',
@@ -13,23 +12,49 @@ export default function NewBill(props) {
         interest_rate: ''
     })
 
+    useEffect(() => {
+        console.log(props.editShow)
+        if (props.editShow === true) {
+            getBill()
+        }
+    }, [props.editShow])
 
-    const handleChange = e => setNewBill({...newBill, [e.target.name] : e.target.value})
 
-    const handleSubmit = e => {
-        e.preventDefault()
+    const handleChange = e => setBill({...bill, [e.target.name] : e.target.value})
+
+    const getBill = () => {
         setLoading(true)
-        fetch('http://localhost:3001/bills', {
-            method: 'POST',
+        fetch(`http://localhost:3001/bills/${props.id}`, {
+            method: 'GET',
             headers: {
             'Content-Type': 'application/json',
             'Authorization': "bearer " + localStorage.getItem('snowmanToken')
-            },
-            body: JSON.stringify(newBill),
+            }
         })
         .then(response => response.json())
         .then(bill => {
             if (bill) {
+                setLoading(false)
+                setBill(bill)
+            }
+        })
+    }
+
+    const handleSubmit = e => {
+        e.preventDefault()
+        setLoading(true)
+        fetch(`http://localhost:3001/bills/${bill.id}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "bearer " + localStorage.getItem('snowmanToken')
+            },
+            body: JSON.stringify(bill),
+        })
+        .then(response => response.json())
+        .then(updatedBill => {
+            if (updatedBill) {
+                console.log(updatedBill)
                 setLoading(false)
                 props.setReloadBills(true)
                 handleClose()
@@ -46,20 +71,20 @@ export default function NewBill(props) {
     }
 
     const handleClose = () => {
-        setNewBill({
+        setBill({
             title: "",
             due_date: 1,
             amount_due: '',
             balance: '',
             interest_rate: ''
         })
-        props.setNewBillModalShow(false)
+        props.setEditShow(false)
 
     }
 
     return (
-        <Dialog open={props.newBillModalShow} onClose={handleClose}>
-            <DialogTitle>Set up a new Bill</DialogTitle>
+        <Dialog open={props.editShow} onClose={handleClose}>
+            <DialogTitle>Edit {bill.title}</DialogTitle>
             <DialogContent>
             <DialogContentText>
                 Enter your bill information.
@@ -77,7 +102,7 @@ export default function NewBill(props) {
                     autoFocus
                     id="outlined-required"
                     label="Required"
-                    value={newBill.title}
+                    value={bill.title}
                     onChange={handleChange}
                     helperText="Bill Title"
                     name="title"
@@ -88,7 +113,7 @@ export default function NewBill(props) {
                         required
                         labelId="demo-simple-select-helper-label"
                         id="demo-simple-select-helper"
-                        value={newBill.due_date}
+                        value={bill.due_date}
                         label="Due Date"
                         onChange={handleChange}
                         name='due_date'
@@ -106,7 +131,7 @@ export default function NewBill(props) {
                         shrink: true,
                     }}
                     helperText="Amount due each month"
-                    value={newBill.amount_due}
+                    value={bill.amount_due}
                     onChange={handleChange}
                     name='amount_due'
                 />
@@ -119,7 +144,7 @@ export default function NewBill(props) {
                         shrink: true,
                     }}
                     helperText="Interest Rate"
-                    value={newBill.interest_rate}
+                    value={bill.interest_rate}
                     onChange={handleChange}
                     name='interest_rate'
                 />
@@ -132,7 +157,7 @@ export default function NewBill(props) {
                         shrink: true,
                     }}
                     helperText="Remaining Balance"
-                    value={newBill.balance}
+                    value={bill.balance}
                     onChange={handleChange}
                     name='balance'
                 />

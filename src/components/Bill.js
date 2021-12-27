@@ -31,7 +31,7 @@ export default function Bill(props) {
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <Box sx={{ margin: 1 }}>
-                        <BillShow id={props.id} title={props.title} />
+                        <BillShow setReloadBills={props.setReloadBills} id={props.id} title={props.title} />
                     </Box>
                 </Collapse>
                 </TableCell>
@@ -39,11 +39,3 @@ export default function Bill(props) {
         </React.Fragment>
     )
 }
-
-        // <tr onClick={() => props.handleBillModalShow(props.id)}>
-        //     <td>{props.title}</td>
-        //     <td>{props.due_date}</td>
-        //     <td>{props.amount_due}</td>
-        //     <td>{props.interest_rate}</td>
-        //     <td>{props.balance}</td>
-        // </tr>

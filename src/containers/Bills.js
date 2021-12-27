@@ -2,24 +2,40 @@ import React, {useState, useEffect} from 'react'
 import Bill from '../components/Bill'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { TableRow, TableCell, TableContainer, Table, TableHead,TableBody, Button, Stack } from '@mui/material'
+import { CircularProgress, TableRow, TableCell, TableContainer, Table, TableHead,TableBody, Button, Stack } from '@mui/material'
 
 
 export default function Bills(props) {
 
-    const [open, setOpen] = useState(false)
     const [bills, setBills] = useState([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         fetchBills()
-    }, [])
+        if (props.reloadBills) {
+            fetchBills()
+            props.setReloadBills(false)
+        }
+    }, [props.reloadBills])
 
     const fetchBills = () => {
-        
+        setLoading(true)
+        fetch('http://localhost:3001/bills', {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "bearer " + localStorage.getItem('snowmanToken')
+                }
+            })
+            .then(response => response.json())
+            .then(bills => {
+                setBills(bills)
+                setLoading(false)
+        })
     }
     
     const renderBills = () => {
-        return props.bills.map(bill => {
+        return bills.map(bill => {
             return <Bill 
                         title={bill.title} 
                         amount_due={bill.amount_due} 
@@ -29,6 +45,7 @@ export default function Bills(props) {
                         id={bill.id}
                         key={bill.id}
                         handleBillModalShow={props.handleBillModalShow}
+                        setReloadBills={props.setReloadBills}
                     />
         });
     }
@@ -38,6 +55,7 @@ export default function Bills(props) {
             <Stack spacing={2}>
                 <Typography variant="h4" color="initial" align="center">Bills</Typography>
                 <Button variant="outlined" onClick={props.setNewBillModalShow}>Add A Bill</Button>
+                {loading ? <CircularProgress /> : 
                 <TableContainer >
                     <Table aria-label="collapsible table">
                         <TableHead>
@@ -54,10 +72,9 @@ export default function Bills(props) {
                             {renderBills()}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                </TableContainer>}
             </Stack>
         </Container>
-        
     )
 }
 

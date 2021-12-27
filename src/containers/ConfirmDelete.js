@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,15 +7,21 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 export default function ConfirmDelete(props) {
-    // const [open, setOpen] = React.useState(false);
 
-    // const handleClickOpen = () => {
-    //     setOpen(true);
-    // };
-
-    // const handleClose = () => {
-    //     setOpen(false);
-    // };
+    const handleBillDelete = () => {
+        fetch(`http://localhost:3001/bills/${props.id}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "bearer " + localStorage.getItem('snowmanToken')
+            },
+        })
+        .then(response => response.json())
+        .then(bill => {
+            props.setReloadBills(true)
+            props.handleClose(false)
+        })
+    }
 
     return (
         <div>
@@ -26,7 +32,7 @@ export default function ConfirmDelete(props) {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                {"Use Google's location service?"}
+                {"Delete " + props.title + "?"}
                 </DialogTitle>
                 <DialogContent>
                 <DialogContentText id="alert-dialog-description">
@@ -35,7 +41,7 @@ export default function ConfirmDelete(props) {
                 </DialogContent>
                 <DialogActions>
                 <Button onClick={() => props.handleClose(false)}>Disagree</Button>
-                <Button onClick={props.handleDelete} autoFocus>
+                <Button onClick={handleBillDelete} autoFocus>
                     Agree
                 </Button>
                 </DialogActions>
